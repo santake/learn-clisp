@@ -33,7 +33,20 @@ Note for Common Lisp
 ;; you canNOT overwrite it:
 (defvar *bar* 3)
 ```
-**NOTE:** Use *earmuffs* (`*`) to define global variables (actually you can define it without earmuffs...).
+example of `defvar`:
+```lisp
+> (defvar *b* 5)
+*B*
+> *b*
+5
+> (defvar *b* 2)
+*B*
+> *b*
+5
+```
+**NOTE1:** Use *earmuffs* (`*`) to define global variables (actually you can define it without earmuffs...).
+
+**NOTE2:** You *CAN* overwrite the value by using `setf`, even though you define it with `defvar`.
 
 
 ## Local variable: `let`
@@ -195,7 +208,16 @@ control flow forced earlier return. See also PROG1, PROG2.
 
 [See](http://jtra.cz/stuff/lisp/sclr/progn.html)
 
-
+Simply, you can put an expression into a list (and returns the result of the last evaluation).
+e.g.
+```lisp
+> (defvar *numisodd* nil)
+> (if (oddp 5)
+    (progn (setf *numisodd* t)
+            'odd-number)
+    'even-number)
+==> ODD-NUMBER
+```
 
 
 
