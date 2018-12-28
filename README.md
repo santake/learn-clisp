@@ -3,7 +3,8 @@ Note for Common Lisp
 ======================
 
 # Reference
- - [Simplified Common Lisp Reference](http://jtra.cz/stuff/lisp/sclr/index.html)
+- Land of Lisp (Book)
+- [Simplified Common Lisp Reference](http://jtra.cz/stuff/lisp/sclr/index.html)
 
 # Basic
 - Boot REPL:  `> clisp`
@@ -49,7 +50,7 @@ example of `defvar`:
 **NOTE2:** You *CAN* overwrite the value by using `setf`, even though you define it with `defvar`.
 
 
-## Local variable: `let`
+## Local variables: `let`
 ```lisp
 (let ((a 5) (b 1))
     (+ a b) )
@@ -62,6 +63,14 @@ example of `defvar`:
       (func 5) )
 ```
 
+## `labels`
+
+TBD
+
+
+
+
+
 
 # Rules
 
@@ -70,11 +79,23 @@ example of `defvar`:
 - Upper/lower case does not matter
  almost of all use lower case though
 
+   - To use upper/lower case in characters, enclose it with `|`:
+        e.g. 
+        ```lisp
+        > (print '|Hanage|)
+        |Hanage|
+        ```
+        (But you will get the result with pipe...)
+
+
 - Code mode & Data mode
   - Code mode: `(command val val val)`
   - Data mode:  `'(a b c)`  
-    Put *single quote* at the top of the list.   
+    - Put *single quote* at the top of the list.   
     (This is to let Lisp not to evaluate the list.)
+  - Code in Data mode: `` `(value ,(code) value)`` 
+      - not single-quote(`'`) but backquote (`` ` ``)
+      - `,(code)` is the mixed in 
   
 - Data Structure: 'Cons'-cell
   - 'nil' at the end of the list (cell)
@@ -85,9 +106,88 @@ example of `defvar`:
 
 # Functions
 
-## `print`, `prin1`, `princ`
+## `write`, `print`, `prin1`, `princ`
 
-TBD
+Thanks to [Stakoverflow](https://stackoverflow.com/questions/19756296/whats-the-difference-between-write-print-pprint-princ-and-prin1):
+
+- `write` is the general entry point to the Lisp printer.
+- `prin1` produces output suitable for input to read.
+- `princ` is just like prin1 except that the output has no escape characters. princ is intended to look good to people, while output from prin1 is intended to be acceptable to read.
+  - for human
+- `print` is just like prin1 except that the printed representation of object is preceded by a newline and followed by a space.
+  - for computers
+- `pprint` produces pretty output.
+e.g. :
+```lisp
+[]> (write 'hanage)
+HANAGE
+HANAGE
+[]> (prin1 'hanage)
+HANAGE
+HANAGE
+[]> (princ 'hanage)
+HANAGE
+HANAGE
+[]> (print 'hanage)
+
+HANAGE 
+HANAGE
+[]> (pprint 'hanage)
+
+HANAGE
+
+[]> ...
+```
+
+e.g. `print`:
+```lisp
+>(defun sayhello0()
+    (print "Enter your name:")
+    (let ((name (read)))
+        (print "Nice to meet you, ")
+        (print name)))
+>(sayhello0)
+"Enter your name:" Hanage
+
+"Nice to meet you, " 
+HANAGE 
+```
+e.g. `princ`:
+```lisp
+>(defun sayhello1()
+    (princ "Enter your name:")
+    (let ((name (read)))
+        (princ "Nice to meet you, ")
+        (princ name)))
+>(sayhello1)
+Enter your name: Hanage
+Nice to meet you, HANAGE
+```
+
+e.g. Simply:
+```lisp
+>(progn 
+    (princ "This sentence will be interrupted")
+    (princ #\newline)
+    (princ "by an annoying newline character.") )
+This sentence will be interrupted
+by an annoying newline character.
+
+>(progn 
+    (print "This sentence will be interrupted")
+    (print #\newline)
+    (print "by an annoying newline character.") )    
+"This sentence will be interrupted" 
+#\Newline 
+"by an annoying newline character." 
+```
+
+
+
+
+
+
+
 
 
 ## `cons`
@@ -166,14 +266,15 @@ To get the 3rd, 4th, and 5th slot from the list.
 ***ERROR***
 ```
 
+
 ## `equal` functions:
 
-### Mandatory:
+### you should remember:
 1) `=`: to compare numbers
 2) `eq`: to compare symbols (characters)
 3) `equal`: to compare any other than symbols (e.g. arrays, numbers)
    
-### Nice to have:
+### nice to have:
 4) `eql`: to compare symbols, numbers, characters ... almost same as equal (?)
 5) `equalp`: to compare 
     - string with ignoring Upper/lower-case
@@ -187,7 +288,8 @@ To get the 3rd, 4th, and 5th slot from the list.
 
  
 ## `mapcar`
-To apply function for each item in the list.
+To apply a function to each item from the list. The size of the list will not change.
+
 ```lisp
 > (mapcar #'sqrt '(1 2 3 4))
 (1 1.4142135 1.7320508 2)
@@ -205,8 +307,7 @@ NOTE: `#'` is the abbreviation of the function operator.
 PROGN calls its expression in the order they have been written. 
 Resulting value is the value of the last form unless non-local 
 control flow forced earlier return. See also PROG1, PROG2.
-
-[See](http://jtra.cz/stuff/lisp/sclr/progn.html)
+[See this in detail](http://jtra.cz/stuff/lisp/sclr/progn.html).
 
 Simply, you can put an expression into a list (and returns the result of the last evaluation).
 e.g.
@@ -219,5 +320,23 @@ e.g.
 ==> ODD-NUMBER
 ```
 
+
+
+## `eval`
+The book says it is powerful but dangerous.
+You have to avoid using them as possible as you can because
+it can execute 'malicious' codes from outside.
+
+```lisp
+> (defparameter *foo* '(+ 1 2))
+*FOO*
+> *foo*
+(+ 1 2)
+> (eval *foo*)
+3
+```
+
+* Also you should be careful with 'reader macro', which is `#.(function)`.
+  * To avoid this, set global variable `*read-eval*` with `nil`.
 
 
