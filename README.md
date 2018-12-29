@@ -184,16 +184,10 @@ by an annoying newline character.
 
 
 
-
-
-
-
-
-
 ## `cons`
-To connect two data into one.
+To connect two lists into one.
 ```lisp 
-> (cons 'chicken 'pork') 
+> (cons 'chicken 'pork) 
 (CHICKEN . PORK)
 ```
 ```lisp
@@ -201,6 +195,10 @@ To connect two data into one.
 (CHIKEN)
 ;; (cons 'chicken ()) is the same.
 ```  
+```lisp
+> (cons 1 (cons 2 (cons 3 nil)))
+(1 2 3)
+```
 
 ## `list`
 To create list, simply.
@@ -340,3 +338,37 @@ it can execute 'malicious' codes from outside.
   * To avoid this, set global variable `*read-eval*` with `nil`.
 
 
+
+## 'Lambda'
+
+By using *lambda* function/capability, you can make a function without declaring it.  
+(Atually *lambda* is not a function but a *macro*.)
+
+Usually when you define a function, it goes like this:
+```lisp
+> (defun half(n)
+    (/ n 2))
+> (half 4)
+2
+> #'half
+#<FUNCTION HALF (N) (DECLARE (SYSTEM::IN-DEFUN HALF)) (BLOCK HALF (/ N 2))>
+...
+```
+NOTE: `#'` is to obtain function itself.
+
+*Lambda* is to do this at once. It is a capability to define function Without the function name.
+```lisp
+> (lambda (n) (/ n 2))
+#<FUNCTION :LAMBDA (N) (/ N 2)>
+```
+
+So, you can use it like:
+```lisp
+> (mapcar (lambda (n) (/ n 2)) 
+          '(2 4 6 8 10))
+(1 2 3 4 5)
+```
+
+
+# Dive into *list*
+[Next page](DiveIntoList.md)
