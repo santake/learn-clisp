@@ -1,14 +1,14 @@
 ;;; Default (initial) location of theuser
 (defparameter *currentLocation* 'living-room)
 ;;; 'Node' association list (alist):
-(defparameter *nodes* 
+(defparameter *wizard-nodes* 
     '(
         (living-room (you are in the living room. a wizard is snoring loudly on the couch.))
         (garden (you are in a beautiful garden. there is a well in front of you.))
         (attic (you are in the attic. there is a giant welding torch in the corner))
     ))
 ;; 'Edge' alist [Data structure:  ([node] [direction] [method])  ]
-(defparameter *edges*
+(defparameter *wizard-edges*
     '(
         (living-room (garden west door) (attic upstairs ladder))
         (garden (living-room east door))
@@ -53,14 +53,14 @@
 
 ;;; view the current location:
 (defun look()
-    (append (describe-location *currentLocation* *nodes*)
-            (describe-paths *currentLocation* *edges*)
+    (append (describe-location *currentLocation* *wizard-nodes*)
+            (describe-paths *currentLocation* *wizard-edges*)
             (describe-objects *currentLocation* *objects* *object-locations*) ))
 
 ;;; walk around
 (defun walk(direction)
     (let ((next (find direction
-                      (cdr (assoc *currentLocation* *edges*))
+                      (cdr (assoc *currentLocation* *wizard-edges*))
                       :key #'cadr)))
         (if next
             (progn (setf *currentLocation* (car next)) 

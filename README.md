@@ -9,7 +9,8 @@ Note for Common Lisp
 # Basic
 - Boot REPL:  `> clisp`
 - Shut it down: `[x]> (exit)  or (quit)`
-- load file in REPL: ` [x]> (load 'FILE-NAME.lisp)`
+- load file in REPL: ` [x]> (load 'FILE-NAME.lisp)` 
+    - you can omit `.lisp` extension
 - Exit REPL: `[x]> (exit)` or `(quit)`
  
 # Words
@@ -64,9 +65,14 @@ example of `defvar`:
 ```
 
 ## `labels`
+[See](https://stackoverflow.com/questions/9105870/whats-the-difference-between-flet-and-labels-in-common-lisp):
 
-TBD
+In Common Lisp, both flet and labels make lexical bindings of slightly different sorts:
 
+- flet is a special form for local function binding.   
+  Bindings are not recursive and **cannot** refer to each other. Each binding contains function name, arguments, and function body.
+- labels is a special form for local function binding.   
+  Bindings can be recursive and **can** refer to each other. Each binding contains function name, arguments, and function body.
 
 
 
@@ -98,11 +104,18 @@ TBD
       - `,(code)` is the mixed in 
   
 - Data Structure: 'Cons'-cell
+  - list consists of connected cons-cells
   - 'nil' at the end of the list (cell)
   - Functions to handle list: cons, car, cdr, etc.
 
 - Conditions: `if`, `when`, `cond`, etc.
  
+
+
+# What is *list*
+ [See next page](DiveIntoList.md)
+
+
 
 # Functions
 
@@ -301,6 +314,30 @@ NOTE: `#'` is the abbreviation of the function operator.
 (FOO BAZ)
 ```
 
+
+## `mapc`
+Variation of `mapcar`; it does not return a result list.
+
+
+## `maplist`
+Similar to `mapcar` but it seeks all of the list. Comparing it with `mapcar`;
+
+e.g. `mapcar`:
+```lisp
+> (mapcar #'print '(a b c))
+A
+B
+C
+```
+e.g. `maplist`:
+```lisp
+> (maplist #'print '(a b c))
+(A B C)
+(B C)
+(C)
+```
+
+
 ## `progn` (special operator) 
 PROGN calls its expression in the order they have been written. 
 Resulting value is the value of the last form unless non-local 
@@ -370,5 +407,55 @@ So, you can use it like:
 ```
 
 
-# Dive into *list*
-[Next page](DiveIntoList.md)
+## `substitute-if`
+Replace the value with the specified character according to the condition matches.
+```lisp
+> (substitute-if 0 
+        #'oddp 
+        '(1 2 3 4 5 6 7))
+(0 2 0 4 0 6 0)
+```
+```lisp
+> (substitute-if #\e 
+        #'digit-char-p 
+        "I'm a l33t hark3r!")
+"I'm a leet harker!"
+```
+
+## `complement`
+Function to do reverse the result of a function.
+e.g. To get characters that are not alphabet nor numbers
+```lisp
+(complement #'alphanumericp)
+```
+
+## `with-open-file`
+A function to write a file.
+e.g.
+```lisp
+(with-open-file 
+    (my-stream "./testfile.txt"
+        :direction :output
+        :if-exists :supersede)
+    (princ "Hello file" my-stream) )
+```
+Structure:
+```lisp
+(with-open-file 
+  (my-stream ...)
+  (... describe the contents here ...)
+)
+```
+### Keyword variables for with-open-file (Stream)
+- `:direction :output` : open a file for output (not input)
+- `:if-exists :supersede` : overwrite the contents if there is already a file
+
+**NOTE**: the colon is a *keyword symbol*. It is a 'symbol' itself, no other than that.  
+    e.g.   
+    ```lisp
+    > :cigar
+    :CIGAR
+    > (let ((:cigar 5)) :cigar)
+    *** - LET: :CIGAR is a constant, may not be used as a variable
+    ```
+
